@@ -1,14 +1,26 @@
 # Rancher on KVM
 
+> :warning: **Warning**
+>
+> This document has been compiled with notes taken during this setup. These steps were finalized into a document was months after the setup was completed. Please follow the instructions at your own risk.
+
 This document serves as a guide for setting up a [Rancher](https://rancher.com/) [Kubernetes](https://kubernetes.io/) cluster on a local network [KVM](https://www.linux-kvm.org/) cluster. Please note, I would likely explore using [Proxmox](https://www.proxmox.com/) to manage the cluster nodes if I were to implement a new local network Kubernetes cluster instead of using the Terraform KVM Libvirt provider.
 
 Additional routing configuration, not covered in this document, can be implemented to expose services to the public internet. This will require configuration specific to your network architecture.
 
-The steps outlined here cover my experience setting up a KVM cluster ontop of a bare metal server. The host base image was [Ubuntu 18.04 LTS (Bionic Beaver)](https://releases.ubuntu.com/18.04/).
+The steps outlined here cover my experience setting up a KVM cluster ontop of a bare metal server. The host base image was [Ubuntu 18.04 LTS (Bionic Beaver)](https://releases.ubuntu.com/18.04/). This is an 11 node production Rancher cluster ontop of 24 cores and 100GB ECC memory. The nodes roles are:
 
-> :warning: **Warning**
+
+| Count | Role                  | vCPUs | Memory |
+| ----: | :-------------------- | :---- | :----- |
+| 1     | Rancher Server Master | 4     | 4GB    |
+| 2     | Rancher Server Slave  | 1     | 2GB    |
+| 2     | Control Plane         | 1     | 2GB    |
+| 3     | etcd                  | 2     | 6GB    |
+| 3     | Worker                | 4     | 24GB   |
+> **Note**
 >
-> This document has been compiled with notes taken during this setup. This actual document was writen months after the setup, so please follow the instructions at your own risk.
+> The allocation to the *Rancher Server Master* node was changed with KVM directly, and it's listed values are not relected in the Terraform script.
 
 ## Host Setup
 
@@ -641,10 +653,53 @@ Then run netplan apply and reboot the system:
 
 ```bash
 sudo nano /etc/netplan/50-cloud-init.yaml 
-sudo netplan apply && sudo reboot
+sudo netplan apply
 ```
 
+Now, enable IP forward. Without this, you may have issues with the docker host routing traffic across the overlay netowrk.
 
+```
+echo 1 > /proc/sys/net/ipv4/ip_forward
+```
+
+Now reboot the system
+
+```
+sudo reboot
+```
+
+### Installing the Rancher Server
+
+We will install Rancher on the server nodes. Choose a node to be the master, and run the following commands.
+
+```bash
+sudo curl -sfL https://get.k3s.io | sh -
+sudo snap install helm --classic
+sudo helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+export RANCHER_HOSTNAME="admin.rancher.local"
+sudo helm install rancher rancher-stable/rancher --namespace cattle-system --set hostname="$RANCHER_HOSTNAME" --set ingress.tls.source=rancher --kubeconfig /etc/rancher/k3s/k3s.yaml
+```
+
+Before existing, read `/var/lib/rancher/k3s/server/node-token`. You will need privleges to read this file. You will need to set an env variable to this value for each of the Rancher server slaves.
+
+We assume the master's address is `192.168.10.150`. Please make any necessary adjustments.
+
+Login to each of the Rancher server slaves and run the following:
+
+```bash
+export K3S_TOKEN="..."
+sudo curl -sfL https://get.k3s.io | K3S_URL=https://192.168.10.150:6443 K3S_TOKEN=$K3S_TOKEN sh -
+```
+
+From the master node, run the following and wait until all the slaves are online:
+
+```bash
+watch -n 1 "sudo k3s kubectl get nodes"
+```
+
+Once all slaves are online, you should setup DNS to resolve `admin.rancher.local` (hostname set in the Rancher server master node) to `192.168.10.150` (address of the rancher admin master node). The easiest way is to complete this is to simply edit the hosts file on a client computer.
+
+Navigating to [admin.rancher.local](admin.rancher.local) should bring up the Rancher admin screen. Please follow the instructions to complete your setup. Once complete, you should be able to utilize your remaining VMs to build your local cluster! 
 
 ## Resources
 
