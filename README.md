@@ -31,7 +31,6 @@ Begin by installing the dependency packages listed below.
 ```bash
 sudo apt-get install qemu qemu-kvm libvirt-clients libvirt-dev libvirt-daemon-system bridge-utils qemu-guest-agent virt-top virt-viewer
 sudo apt-get install virt-manager
-sudo apt-get install genisoimage
 ```
 
 You may experience issues related to SELinux. This has been [referenced here](https://github.com/dmacvicar/terraform-provider-libvirt/commit/22f096d9) as a known issue. The solution is to set the security_drivers to none in `/etc/libvirt/qemu.conf`.
@@ -53,6 +52,53 @@ sudo brctl addbr br0
 sudo brctl addif br0 eno1
 sudo reboot
 ```
+
+### Installing Terraform Libvirt Provider
+
+Fist, you will need to install the system dependencies for this provider.
+
+```bash
+sudo apt-get install genisoimage
+sudo apt install golang-go
+```
+
+The [original library repository](https://github.com/dmacvicar/terraform-provider-libvirt.git) does not support [cloud_init](https://cloudinit.readthedocs.io/en/latest/) running on forks of [CoreOS](https://coreos.com/). Unfortunatly, [RancherOS](https://rancher.com/docs/os/v1.x/en/) is a fork of CoreOS, so if you are interested in experimenting with a RancherOS image for the nodes, follow [Terraform Libvirt Provider for RancherOS](
+#Terraform-Libvirt-Provider-for-RancherOS), otherwise follow [Terraform Libvirt Provider for Ubuntu Cloud](#Terraform-Libvirt-Provider-for-Ubuntu-Cloud) (recommended).
+
+#### Terraform Libvirt Provider for Ubuntu Cloud
+
+```bash
+source <( go env )
+mkdir -p $GOPATH/src/github.com/dmacvicar; cd $GOPATH/src/github.com/dmacvicar
+git clone https://github.com/dmacvicar/terraform-provider-libvirt.git
+cd $GOPATH/src/github.com/dmacvicar/terraform-provider-libvirt
+make install
+ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
+mkdir -p "$HOME/.terraform.d/plugins"
+cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
+```
+
+#### Terraform Libvirt Provider for RancherOS
+
+```bash
+source <( go env )
+mkdir -p $GOPATH/src/github.com/johnfedoruk; cd $GOPATH/src/github.com/johnfedoruk
+git clone https://github.com/johnfedoruk/terraform-provider-libvirt.git
+cd $GOPATH/src/github.com/johnfedoruk/terraform-provider-libvirt
+git checkout feature/ci-datasourcetypes
+git remote add upstream https://github.com/dmacvicar/terraform-provider-libvirt.git
+git pull upstream master
+git merge upstream/master
+grep "dmacvicar" -rl . | xargs sed -i s/dmacvicar/johnfedoruk/g
+make install
+ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
+mkdir -p "$HOME/.terraform.d/plugins"
+cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
+```
+
+For more information on the issues with running RancherOS on Terraform, please see:
+- https://github.com/dmacvicar/terraform-provider-libvirt/pull/476
+- https://github.com/rancher/os/issues/2559
 
 ## Resources
 
