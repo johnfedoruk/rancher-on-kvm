@@ -24,6 +24,27 @@ $ sudo mv ./terraform /usr/bin/terraform
 
 Congratulations! You now have Terraform installed!
 
+### Installing KVM
+
+Begin by installing the dependency packages listed below.
+
+```bash
+sudo apt-get install qemu qemu-kvm libvirt-clients libvirt-dev libvirt-daemon-system bridge-utils qemu-guest-agent virt-top virt-viewer
+sudo apt-get install virt-manager
+sudo apt-get install genisoimage
+```
+
+You may experience issues related to SELinux. This has been [referenced here](https://github.com/dmacvicar/terraform-provider-libvirt/commit/22f096d9) as a known issue. The solution is to set the security_drivers to none in `/etc/libvirt/qemu.conf`.
+
+```bash
+sudo sed -i s/#security_driver\ =\ \"selinux\"/security_driver\ =\ \"none\"/g /etc/libvirt/qemu.conf
+sudo sed -i s/#user/user/g /etc/libvirt/qemu.conf
+sudo sed -i s/#group/group/g /etc/libvirt/qemu.conf
+sudo systemctl restart libvirtd.service
+sudo systemctl status libvirtd.service
+```
+
 ## Resources
 
 - [Terraform Download Page](https://www.terraform.io/downloads.html)
+- [Experimenting with Terraform Thread](https://stackoverflow.com/questions/39211000/experimenting-locally-with-terraform)
