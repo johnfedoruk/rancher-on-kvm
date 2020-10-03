@@ -600,6 +600,18 @@ terraform {
 >
 > You may want to set a better username on line 8.
 
+### Bringing Up the Nodes
+
+Simply run `terraform apply` to bring the nodes up.
+
+If you need to destroy your terraform cluster, run
+
+```
+terraform destroy
+virsh list --all | grep " - " | cut -d\  -f6 | xargs -I {} virsh undefine {}
+virsh net-undefine rancher_network
+virsh net-undefine br0
+```
 
 ## Resources
 
