@@ -83,19 +83,19 @@ The [dmacvicar repository](https://github.com/dmacvicar/terraform-provider-libvi
 #### Terraform Libvirt Provider for RancherOS
 
 ```bash
-$ source <( go env )
-$ mkdir -p $GOPATH/src/github.com/johnfedoruk; cd $GOPATH/src/github.com/johnfedoruk
-$ git clone https://github.com/johnfedoruk/terraform-provider-libvirt.git
-$ cd $GOPATH/src/github.com/johnfedoruk/terraform-provider-libvirt
-$ git checkout feature/ci-datasourcetypes
-$ git remote add upstream https://github.com/dmacvicar/terraform-provider-libvirt.git
-$ git pull upstream master
-$ git merge upstream/master
-$ grep "dmacvicar" -rl . | xargs sed -i s/dmacvicar/johnfedoruk/g
-$ make install
-$ ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
-$ mkdir -p "$HOME/.terraform.d/plugins"
-$ cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
+source <( go env )
+mkdir -p $GOPATH/src/github.com/johnfedoruk; cd $GOPATH/src/github.com/johnfedoruk
+git clone https://github.com/johnfedoruk/terraform-provider-libvirt.git
+cd $GOPATH/src/github.com/johnfedoruk/terraform-provider-libvirt
+git checkout feature/ci-datasourcetypes
+git remote add upstream https://github.com/dmacvicar/terraform-provider-libvirt.git
+git pull upstream master
+git merge upstream/master
+grep "dmacvicar" -rl . | xargs sed -i s/dmacvicar/johnfedoruk/g
+make install
+ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
+mkdir -p "$HOME/.terraform.d/plugins"
+cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
 ```
 
 For more information on the issues with running RancherOS on Terraform, please see:
@@ -104,11 +104,40 @@ For more information on the issues with running RancherOS on Terraform, please s
 
 ## Setting Up the VMs
 
+### Get Node OS
+
 At this point, we will want to install our target image. We are moving forward with Ubuntu as our node image.
 
 ```bash
-$ wget https://cloud-images.ubuntu.com/releases/bionic/release/ubuntu-18.04-server-cloudimg-amd64.img
+wget https://cloud-images.ubuntu.com/releases/bionic/release/ubuntu-18.04-server-cloudimg-amd64.img
 ```
+
+### Disabling AppArmor for KVM
+
+The following error may become familiar to you if you do not disable AppArmor for KVM:
+
+```
+Error: Error creating libvirt domain: virError(Code=1, Domain=10, Message='internal error: qemu unexpectedly closed the monitor: 2020-04-13T00:46:14.839704Z qemu-system-x86_64: -drive file=/var/lib/libvirt/images/rancher-work_node-0_volume.qcow2,format=qcow2,if=none,id=drive-virtio-disk0: Could not reopen file: Permission denied')
+```
+
+Make the folloing changes in `/etc/apparmor.d/libvirt/TEMPLATE.qemu`
+
+```
+#
+# This profile is for the domain whose UUID matches this file.
+#
+
+#include <tunables/global>
+
+profile LIBVIRT_TEMPLATE flags=(attach_disconnected) {
+  #include <abstractions/libvirt-qemu>
+  /var/lib/libvirt/images**.qcow2 rwk,
+}
+```
+
+For more information, see
+- https://askubuntu.com/questions/741035/disabling-apparmor-for-kvm
+
 
 ## Resources
 
