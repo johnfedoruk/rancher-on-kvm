@@ -83,24 +83,32 @@ The [dmacvicar repository](https://github.com/dmacvicar/terraform-provider-libvi
 #### Terraform Libvirt Provider for RancherOS
 
 ```bash
-source <( go env )
-mkdir -p $GOPATH/src/github.com/johnfedoruk; cd $GOPATH/src/github.com/johnfedoruk
-git clone https://github.com/johnfedoruk/terraform-provider-libvirt.git
-cd $GOPATH/src/github.com/johnfedoruk/terraform-provider-libvirt
-git checkout feature/ci-datasourcetypes
-git remote add upstream https://github.com/dmacvicar/terraform-provider-libvirt.git
-git pull upstream master
-git merge upstream/master
-grep "dmacvicar" -rl . | xargs sed -i s/dmacvicar/johnfedoruk/g
-make install
-ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
-mkdir -p "$HOME/.terraform.d/plugins"
-cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
+$ source <( go env )
+$ mkdir -p $GOPATH/src/github.com/johnfedoruk; cd $GOPATH/src/github.com/johnfedoruk
+$ git clone https://github.com/johnfedoruk/terraform-provider-libvirt.git
+$ cd $GOPATH/src/github.com/johnfedoruk/terraform-provider-libvirt
+$ git checkout feature/ci-datasourcetypes
+$ git remote add upstream https://github.com/dmacvicar/terraform-provider-libvirt.git
+$ git pull upstream master
+$ git merge upstream/master
+$ grep "dmacvicar" -rl . | xargs sed -i s/dmacvicar/johnfedoruk/g
+$ make install
+$ ls $GOPATH/bin/terraform-provider-libvirt >/dev/null 2>/dev/null && echo "Install ok" || echo "Install failed"
+$ mkdir -p "$HOME/.terraform.d/plugins"
+$ cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
 ```
 
 For more information on the issues with running RancherOS on Terraform, please see:
 - https://github.com/dmacvicar/terraform-provider-libvirt/pull/476
 - https://github.com/rancher/os/issues/2559
+
+## Setting Up the VMs
+
+At this point, we will want to install our target image. We are moving forward with Ubuntu as our node image.
+
+```bash
+$ wget https://cloud-images.ubuntu.com/releases/bionic/release/ubuntu-18.04-server-cloudimg-amd64.img
+```
 
 ## Resources
 
