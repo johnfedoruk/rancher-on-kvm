@@ -703,5 +703,20 @@ Navigating to [admin.rancher.local](admin.rancher.local) should bring up the Ran
 
 ## Resources
 
-- [Terraform Download Page](https://www.terraform.io/downloads.html)
-- [Experimenting with Terraform Thread](https://stackoverflow.com/questions/39211000/experimenting-locally-with-terraform)
+- https://www.terraform.io/downloads.html
+- https://stackoverflow.com/questions/39211000/experimenting-locally-with-terraform
+- https://www.pimwiddershoven.nl/entry/deploy-kubernetes-cluster-with-rancher-kubernetes-engine-rke
+- https://www.pimwiddershoven.nl/entry/deploy-kubernetes-cluster-with-rancher-kubernetes-engine-rke
+- https://github.com/dmacvicar/terraform-provider-libvirt/blob/master/website/docs/r/network.markdown
+- https://github.com/dmacvicar/terraform-provider-libvirt/blob/master/libvirt/resource_libvirt_network.go
+- https://www.redhat.com/archives/libvir-list/2011-November/msg00876.html
+- https://forum.level1techs.com/t/- cant-seem-to-configure-a-bridge-for-windows-guest-in-virt-manager-update-trying-to-use-virtio/111719/13
+- https://www.reddit.com/r/linuxquestions/comments/97ksky/how_to_make_a_network_bridge_for_kvm_with_enp4s0/
+- https://askubuntu.com/questions/179508/kvm-bridged-network-not-working
+- https://www.redhat.com/archives/libvirt-users/2014-March/msg00091.html
+- https://blog.wikichoon.com/2019/04/host-network-interfaces-panel-removed.html
+- https://www.cyberciti.biz/faq/how-to-add-network-bridge-with-nmcli-networkmanager-on-linux/
+- https://ubuntuforums.org/showthread.php?t=1789126
+- https://github.com/dmacvicar/terraform-provider-libvirt/issues/272
+- https://serverfault.com/questions/672253/- how-to-configure-and-use-qemu-guest-agent-in-ubuntu-12-04-my-main-aim-is-to-get
+- https://askubuntu.com/questions/741035/disabling-apparmor-for-kvm
