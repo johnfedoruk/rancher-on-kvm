@@ -44,6 +44,16 @@ sudo systemctl restart libvirtd.service
 sudo systemctl status libvirtd.service
 ```
 
+### Creating Bridge Network
+
+You will need to add a br0 interface. In this case, it bridges eno1. Please note that your physical nics may be named differently. After creating the bridge, restart your computer.
+
+```bash
+sudo brctl addbr br0
+sudo brctl addif br0 eno1
+sudo reboot
+```
+
 ## Resources
 
 - [Terraform Download Page](https://www.terraform.io/downloads.html)
