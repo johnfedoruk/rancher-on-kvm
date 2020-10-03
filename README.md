@@ -9,3 +9,21 @@ The steps outlined here cover my experience setting up a KVM cluster ontop of a 
 > :warning: **Warning**
 >
 > This document has been compiled with notes taken during this setup. This actual document was writen months after the setup, so please follow the instructions at your own risk.
+
+## Host Setup
+
+### Download and Install Terraform 0.12
+
+Download the ZIP file. It must be unzipped, and the executable `terraform` must be put on your path.
+
+```shell
+$ wget https://releases.hashicorp.com/terraform/0.12.24/terraform_0.12.24_linux_amd64.zip
+$ unzip terraform_0.12.24_linux_amd64.zip
+$ sudo mv ./terraform /usr/bin/terraform
+```
+
+Congratulations! You now have Terraform installed!
+
+## Resources
+
+- [Terraform Download Page](https://www.terraform.io/downloads.html)
