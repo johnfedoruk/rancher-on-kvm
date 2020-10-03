@@ -78,6 +78,8 @@ mkdir -p "$HOME/.terraform.d/plugins"
 cp "$GOPATH/bin/terraform-provider-libvirt" "$HOME/.terraform.d/plugins"
 ```
 
+The [dmacvicar repository](https://github.com/dmacvicar/terraform-provider-libvirt.git) is the only community libvirt provider library listed on [Terraform's website](https://www.terraform.io/docs/providers/type/community-index.html). Terraform does not have an official library for this provider.
+
 #### Terraform Libvirt Provider for RancherOS
 
 ```bash
