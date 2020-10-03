@@ -613,6 +613,39 @@ virsh net-undefine rancher_network
 virsh net-undefine br0
 ```
 
+## Installing Rancher
+
+### Network Configuration
+
+You should be able to SSH into the nodes using the key you set in `cloud_init.cfg`. Alternatively, you may opt to access the nodes using `virt-manager`.
+
+Access each node and use netplan to set the network configuration.
+
+```
+network:
+  version: 2
+  ethernets:
+    ens3:
+      dhcp4: false
+      addresses: [ 192.168.10.181/24 ]
+      gateway4: 192.168.10.1
+      nameservers:
+        addresses: [ 192.168.10.1,8.8.8.8 ]
+        search: [ work-node-01 ]
+```
+> **/etc/netplan/50-cloud-init.yaml**
+>
+> Each node will require modification of this line to reflect planned network architecture.
+
+Then run netplan apply and reboot the system:
+
+```bash
+sudo nano /etc/netplan/50-cloud-init.yaml 
+sudo netplan apply && sudo reboot
+```
+
+
+
 ## Resources
 
 - [Terraform Download Page](https://www.terraform.io/downloads.html)
